@@ -54,6 +54,16 @@ export default function Home() {
     await updateInventory();
   }
 
+  const searchForItem = async (item) => {
+    const docRef = doc(firestore, 'inventory', item);
+    const docSnap = await getDoc(docRef);
+    if (docSnap.exists()) {
+      return docSnap.data();
+    }
+    return null;
+  }
+
+
   useEffect(() => {
     updateInventory();
   }, []);
@@ -100,6 +110,16 @@ export default function Home() {
         <Box border="1px solid #333">
           <Box width="800px" height="100px" bgcolor={"#ADD8E6"} alignItems={"center"} justifyContent={"center"} display={"flex"}>
             <Typography variant='h2' color={"#333"}>Inventory Items</Typography>
+            <TextField variant='outlined' placeholder='Search' onChange={(e) => {
+              const search = e.target.value;
+              if (search.length > 0) {
+                const results = inventory.filter(({id}) => id.includes(search));
+                setInventory(results);
+              } else {
+                updateInventory();
+              }
+            }
+            } />
           </Box>
 
         <Stack width={"800px"} height={"300px"} spacing={2} overflow={"auto"}>
